@@ -3,6 +3,8 @@ package com.example.josh.college_app;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -12,12 +14,36 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import com.backendless.Backendless;
+import com.backendless.BackendlessUser;
+import com.backendless.async.callback.AsyncCallback;
+import com.backendless.exceptions.BackendlessFault;
 
 public class CollegeAppActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    public static final String BE_APP_ID = "5FDDAE55-6DC9-D5AE-FF7F-CC944B7FFB00";
+    public static final String BE_ANDROID_API_KEY = "2939DCF8-AB16-0A29-FF92-13E259518B00";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Backendless.initApp(this, CollegeAppActivity.BE_APP_ID, CollegeAppActivity.BE_ANDROID_API_KEY);
+
+        BackendlessUser user = new BackendlessUser();
+        user.setEmail( "thejester5674@gmail.com" );
+        user.setPassword( "erinsawagreencar" );
+
+        Backendless.UserService.register(user, new AsyncCallback<BackendlessUser>(){
+            @Override
+            public void handleResponse(BackendlessUser backendlessUser){
+                Log.i( "User ", backendlessUser.getEmail() + " successfully registered" );
+            }
+            @Override
+            public void handleFault(BackendlessFault backendlessFault) {
+                Log.e("Registration error! ", backendlessFault.getMessage());
+            }
+        });
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_college_app);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -40,6 +66,7 @@ public class CollegeAppActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
     }
 
     @Override
@@ -81,6 +108,7 @@ public class CollegeAppActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.family_member) {
+            Fragment contentFragment = null;
             // Handle the camera action
         } else if (id == R.id.nav_gallery) {
 
@@ -100,4 +128,5 @@ public class CollegeAppActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
 }
